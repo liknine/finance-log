@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/usertemplates.ts","./src/vite-env.d.ts","./src/components/layout.tsx","./src/components/ui.tsx","./src/data/mockdata.ts","./src/pages/dashboard.tsx","./src/pages/newshipment.tsx","./src/pages/settings.tsx","./src/pages/shipments.tsx","./src/pages/templates.tsx","./src/pages/tools.tsx","./src/utils/finance.ts"],"version":"6.0.3"}
