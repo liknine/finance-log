@@ -15,7 +15,7 @@ const meta: Record<Tab, [string, string, string]> = {
   detail: ["Поставка", "Детали поставки", "Все вещи внутри поставки и общий итог."]
 };
 
-export function PageHeader({ tab, dark, setDark, setTab }: { tab: Tab; dark: boolean; setDark: (v: boolean) => void; setTab: (v: Tab) => void }) {
+export function PageHeader({ tab, dark, setDark, setTab, dashboardSearch, setDashboardSearch }: { tab: Tab; dark: boolean; setDark: (v: boolean) => void; setTab: (v: Tab) => void; dashboardSearch: string; setDashboardSearch: (v: string) => void }) {
   const current = meta[tab] || meta.dashboard;
   return (
     <CardBox dark={dark} className="headerCard">
@@ -28,10 +28,16 @@ export function PageHeader({ tab, dark, setDark, setTab }: { tab: Tab; dark: boo
         <div className="headerActions">
           <div className={cn("headerTwo", tab === "dashboard" && "headerTwoDashboard")}>
             {tab === "dashboard" ? (
-              <div className={cn("heroSearch", dark && "heroSearchDark")}>
+              <label className={cn("heroSearch", "heroSearchInput", dark && "heroSearchDark")}>
                 <svg viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.6-3.6" /></svg>
-                <span>Поиск сделки</span>
-              </div>
+                <input
+                  value={dashboardSearch}
+                  onChange={(event) => setDashboardSearch(event.target.value)}
+                  placeholder="Поиск сделки"
+                  aria-label="Поиск сделки"
+                />
+                {dashboardSearch ? <button type="button" onClick={() => setDashboardSearch("")} aria-label="Очистить поиск">×</button> : null}
+              </label>
             ) : null}
             <button onClick={() => setDark(!dark)} className={cn("softButton", dark && "softButtonDark")}>{dark ? "Светлая" : "Темная"}</button>
             {tab !== "dashboard" ? (
@@ -91,13 +97,13 @@ export function BottomNav({ tab, setTab, dark }: { tab: Tab; setTab: (v: Tab) =>
   );
 }
 
-export function AppShell({ children, tab, setTab, dark, setDark, currency }: { children: ReactNode; tab: Tab; setTab: (v: Tab) => void; dark: boolean; setDark: (v: boolean) => void; currency: MainCurrency }) {
+export function AppShell({ children, tab, setTab, dark, setDark, currency, dashboardSearch, setDashboardSearch }: { children: ReactNode; tab: Tab; setTab: (v: Tab) => void; dark: boolean; setDark: (v: boolean) => void; currency: MainCurrency; dashboardSearch: string; setDashboardSearch: (v: string) => void }) {
   return (
     <div className={cn("app", dark && "appDark")}>
       <div className="appGrid">
         <Sidebar tab={tab} setTab={setTab} dark={dark} currency={currency} />
         <main className="main">
-          <PageHeader tab={tab} dark={dark} setDark={setDark} setTab={setTab} />
+          <PageHeader tab={tab} dark={dark} setDark={setDark} setTab={setTab} dashboardSearch={dashboardSearch} setDashboardSearch={setDashboardSearch} />
           {children}
         </main>
       </div>

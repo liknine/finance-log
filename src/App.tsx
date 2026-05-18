@@ -331,6 +331,7 @@ export default function App() {
   const [currency, setCurrency] = useState<MainCurrency>(readSavedCurrency);
   const [rubRate, setRubRateState] = useState<number>(getRubRate);
   const [toast, setToast] = useState<{ id: number; message: string } | null>(null);
+  const [dashboardSearch, setDashboardSearch] = useState("");
   const [templateNonce, setTemplateNonce] = useState(0);
 
   const notify = (message: string) => {
@@ -529,11 +530,11 @@ export default function App() {
     : tab === "templates" ? <Templates dark={dark} onUse={(x) => { setEditingShipment(null); setTemplate(x.title); setTemplateNonce((value) => value + 1); setTab("new"); }} />
     : tab === "tools" ? <Tools dark={dark} currency={currency} />
     : tab === "settings" ? <Settings dark={dark} currency={currency} setCurrency={setCurrency} rubRate={rubRate} setRubRate={updateRubRate} onExportBackup={exportBackup} onImportBackup={importBackup} />
-    : <Dashboard dark={dark} shipments={activeShipments} onOpen={open} currency={currency} />;
+    : <Dashboard dark={dark} shipments={activeShipments} onOpen={open} currency={currency} searchQuery={dashboardSearch} />;
 
   return (
     <>
-      <AppShell tab={tab} setTab={navigate} dark={dark} setDark={setDark} currency={currency}>{page}</AppShell>
+      <AppShell tab={tab} setTab={navigate} dark={dark} setDark={setDark} currency={currency} dashboardSearch={dashboardSearch} setDashboardSearch={setDashboardSearch}>{page}</AppShell>
       {toast && <div className={cn("toast", dark && "toastDark")}>{toast.message}</div>}
     </>
   );
