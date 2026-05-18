@@ -28,7 +28,7 @@ export function ShipmentCard({ shipment, dark, onOpen, currency }: { shipment: S
       </div>
       <div className="shipmentStats">
         <MiniStat label="Выручка" value={money(shipment.revenue, currency)} dark={dark} />
-        <MiniStat label="Прибыль" value={`${shipment.profit >= 0 ? "+" : ""}${money(shipment.profit, currency)}`} good={shipment.profit >= 0} bad={shipment.profit < 0} dark={dark} />
+        <MiniStat label="Прибыль" value={`${shipment.profit >= 0 ? "+" : ""}${money(shipment.profit, currency)}`} dark={dark} />
         <MiniStat label="Потрачено" value={money(shipment.spent, currency)} dark={dark} />
         <MiniStat label="Доставка" value={money(shipment.delivery, currency)} dark={dark} />
       </div>

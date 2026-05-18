@@ -8694,3 +8694,288 @@ button, input, select, textarea {
     font-size: 16px !important;
   }
 }
+
+/* v53: mobile-first polish for iPhone 15. Desktop layout and typography stay unchanged. */
+@media (max-width: 760px) {
+  html,
+  body,
+  #root {
+    width: 100%;
+    overflow-x: hidden !important;
+  }
+
+  .app {
+    padding: 10px 10px calc(98px + env(safe-area-inset-bottom)) !important;
+    overflow-x: hidden !important;
+  }
+
+  .appGrid,
+  .main {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    gap: 12px !important;
+  }
+
+  .card {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 26px !important;
+    padding: 20px !important;
+    overflow: hidden;
+  }
+
+  .headerCard {
+    padding: 22px 20px !important;
+    min-height: 0 !important;
+  }
+
+  .headerGrid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+  }
+
+  .pageTitle {
+    font-size: clamp(38px, 10vw, 52px) !important;
+    line-height: .98 !important;
+    letter-spacing: -0.06em !important;
+    max-width: 100% !important;
+  }
+
+  .pageDesc {
+    margin-top: 14px !important;
+    font-size: 17px !important;
+    line-height: 1.5 !important;
+  }
+
+  .headerActions {
+    width: 100% !important;
+    max-width: none !important;
+    gap: 10px !important;
+  }
+
+  .headerTwo,
+  .headerTwoDashboard {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(100px, auto) !important;
+    gap: 10px !important;
+  }
+
+  .heroSearch,
+  .softButton,
+  .primaryButton {
+    min-width: 0 !important;
+  }
+
+  .dashboardMetricGrid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+
+  .dashboardMetric {
+    min-height: 150px !important;
+    height: auto !important;
+    border-radius: 24px !important;
+    padding: 18px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    overflow: hidden !important;
+  }
+
+  .dashboardMetricTop {
+    min-height: 38px !important;
+    gap: 8px !important;
+    align-items: flex-start !important;
+  }
+
+  .dashboardMetricLabel {
+    font-size: 14px !important;
+    line-height: 1.18 !important;
+    max-width: 100% !important;
+  }
+
+  .dashboardMetricIcon {
+    width: 40px !important;
+    min-width: 40px !important;
+    height: 40px !important;
+    border-radius: 15px !important;
+    font-size: 12px !important;
+  }
+
+  .dashboardMetricValue {
+    margin-top: 16px !important;
+    font-size: clamp(25px, 7vw, 34px) !important;
+    line-height: 1.02 !important;
+    letter-spacing: -0.055em !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  .dashboardMetricMeta {
+    margin-top: 10px !important;
+    font-size: 13px !important;
+    line-height: 1.25 !important;
+  }
+
+  .dashboardGrid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+    width: 100% !important;
+  }
+
+  .dashboardGrid > .card {
+    padding: 20px !important;
+  }
+
+  .sectionHead {
+    font-size: clamp(34px, 9.4vw, 48px) !important;
+    line-height: 1 !important;
+    margin-bottom: 18px !important;
+  }
+
+  .listGap {
+    gap: 10px !important;
+  }
+
+  .shipmentCard {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 16px !important;
+    border-radius: 24px !important;
+    overflow: hidden !important;
+  }
+
+  .shipmentTop {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    align-items: start !important;
+    gap: 10px !important;
+  }
+
+  .shipmentName {
+    font-size: 19px !important;
+    line-height: 1.12 !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  .shipmentMeta {
+    font-size: 14px !important;
+    line-height: 1.3 !important;
+    margin-top: 5px !important;
+  }
+
+  .status {
+    height: 34px !important;
+    padding: 0 13px !important;
+    border-radius: 999px !important;
+    white-space: nowrap !important;
+    font-size: 13px !important;
+  }
+
+  .shipmentStats {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 9px !important;
+    margin-top: 16px !important;
+  }
+
+  .shipmentStats .mini {
+    min-height: 104px !important;
+    border-radius: 20px !important;
+    padding: 14px !important;
+    justify-content: space-between !important;
+  }
+
+  .miniLabel {
+    font-size: 13px !important;
+    line-height: 1.15 !important;
+  }
+
+  .shipmentStats .miniValue,
+  .miniValue {
+    font-size: clamp(21px, 6.4vw, 29px) !important;
+    line-height: 1.02 !important;
+    letter-spacing: -0.05em !important;
+    white-space: nowrap !important;
+  }
+
+  .progressInfo,
+  .progress {
+    display: none !important;
+  }
+
+  .formGrid,
+  .formGrid.three,
+  .formGrid.four,
+  .formGrid.five,
+  .formGrid.autoFields {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .itemCard,
+  .detailItemCard,
+  .templateCard,
+  .toolTab,
+  .funnelRow,
+  .currencyPanelClean,
+  .currencyPanel {
+    max-width: 100% !important;
+  }
+
+  .bottomNav {
+    left: 10px !important;
+    right: 10px !important;
+    bottom: 10px !important;
+    border-radius: 24px !important;
+    padding: 8px !important;
+    padding-bottom: calc(8px + env(safe-area-inset-bottom)) !important;
+    gap: 4px !important;
+    z-index: 50 !important;
+  }
+
+  .bottomItem {
+    min-width: 0 !important;
+    height: 62px !important;
+    border-radius: 19px !important;
+    font-size: 12px !important;
+    line-height: 1.1 !important;
+    padding: 7px 3px !important;
+  }
+
+  .bottomItem span {
+    font-size: 14px !important;
+    margin-bottom: 4px !important;
+  }
+
+  .bottomActive {
+    min-height: 70px !important;
+    transform: translateY(-5px) !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .dashboardMetric {
+    min-height: 142px !important;
+    padding: 16px !important;
+  }
+
+  .dashboardMetricValue {
+    font-size: clamp(23px, 6.7vw, 30px) !important;
+  }
+
+  .shipmentStats .mini {
+    min-height: 96px !important;
+    padding: 12px !important;
+  }
+
+  .shipmentStats .miniValue,
+  .miniValue {
+    font-size: clamp(20px, 6vw, 26px) !important;
+  }
+}
