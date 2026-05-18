@@ -9077,3 +9077,64 @@ button, input, select, textarea {
     font-size: clamp(20px, 5.8vw, 25px) !important;
   }
 }
+
+/* v55: small mobile bottom-nav spacing polish. No desktop/layout typography changes. */
+@media (max-width: 760px) {
+  .app {
+    padding-bottom: calc(90px + env(safe-area-inset-bottom)) !important;
+  }
+
+  .bottomNav {
+    left: 10px !important;
+    right: 10px !important;
+    bottom: 9px !important;
+    border-radius: 22px !important;
+    padding: 6px !important;
+    padding-bottom: calc(6px + env(safe-area-inset-bottom)) !important;
+    gap: 3px !important;
+    align-items: center !important;
+  }
+
+  .bottomItem {
+    height: 56px !important;
+    min-height: 56px !important;
+    border-radius: 17px !important;
+    padding: 6px 3px !important;
+    gap: 3px !important;
+    line-height: 1.08 !important;
+    align-content: center !important;
+  }
+
+  .bottomItem span {
+    font-size: 13px !important;
+    line-height: 1 !important;
+    margin-bottom: 2px !important;
+  }
+
+  .bottomItem:not(.bottomActive):not(.bottomActiveDark) {
+    padding-top: 7px !important;
+    padding-bottom: 6px !important;
+  }
+
+  .bottomActive,
+  .bottomActiveDark {
+    height: 62px !important;
+    min-height: 62px !important;
+    transform: translateY(-3px) !important;
+    border-radius: 18px !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .bottomItem {
+    height: 54px !important;
+    min-height: 54px !important;
+    font-size: 11px !important;
+  }
+
+  .bottomActive,
+  .bottomActiveDark {
+    height: 60px !important;
+    min-height: 60px !important;
+  }
+}
