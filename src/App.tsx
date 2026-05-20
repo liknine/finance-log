@@ -534,7 +534,7 @@ export default function App() {
 
   return (
     <>
-      <AppShell tab={tab} setTab={navigate} dark={dark} setDark={setDark} currency={currency} dashboardSearch={dashboardSearch} setDashboardSearch={setDashboardSearch}>{page}</AppShell>
+      <AppShell tab={tab} setTab={navigate} dark={dark} setDark={setDark} currency={currency} dashboardSearch={dashboardSearch} setDashboardSearch={setDashboardSearch}><div key={tab} className="pageTransition">{page}</div></AppShell>
       {toast && <div className={cn("toast", dark && "toastDark")}>{toast.message}</div>}
     </>
   );

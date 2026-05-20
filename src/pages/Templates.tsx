@@ -1,10 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { presets, templates, type TemplateName, type TemplatePreset } from "../data/mockData";
 import { cn, theme } from "../utils/finance";
 import { CardBox, Field, Input } from "../components/UI";
-import { DEFAULT_CUSTOM_FIELDS, deleteUserTemplate, readUserTemplates, selectUserTemplate, upsertUserTemplate, type TemplateField, type UserTemplate } from "../userTemplates";
+import { DEFAULT_CUSTOM_FIELDS, DEFAULT_TEMPLATE_COLOR, TEMPLATE_COLORS, deleteUserTemplate, readUserTemplates, selectUserTemplate, upsertUserTemplate, type TemplateField, type UserTemplate } from "../userTemplates";
 
 const baseTemplates: Exclude<TemplateName, "Свой шаблон">[] = ["Europe", "Китай", "Япония"];
+
+const templateBaseColors: Record<Exclude<TemplateName, "Свой шаблон">, string> = { Europe: "#111111", Китай: "#0ECB81", Япония: "#8B5CF6" };
 
 const fieldOptions: { key: TemplateField; title: string; desc: string }[] = [
   { key: "foreign", title: "Цена закупки", desc: "валюта закупки" },
@@ -37,6 +39,7 @@ export default function Templates({ dark, onUse }: { dark: boolean; onUse: (t: T
   const [customName, setCustomName] = useState("Мой шаблон");
   const [baseTemplate, setBaseTemplate] = useState<Exclude<TemplateName, "Свой шаблон">>("Europe");
   const [fields, setFields] = useState<TemplateField[]>(DEFAULT_CUSTOM_FIELDS);
+  const [templateColor, setTemplateColor] = useState<string>(DEFAULT_TEMPLATE_COLOR);
 
   useEffect(() => {
     const refresh = () => setSaved(readUserTemplates());
@@ -53,6 +56,7 @@ export default function Templates({ dark, onUse }: { dark: boolean; onUse: (t: T
     setCustomName("Мой шаблон");
     setBaseTemplate("Europe");
     setFields(DEFAULT_CUSTOM_FIELDS);
+    setTemplateColor(DEFAULT_TEMPLATE_COLOR);
   };
 
   const openCreateBuilder = () => {
@@ -65,6 +69,7 @@ export default function Templates({ dark, onUse }: { dark: boolean; onUse: (t: T
     setCustomName(template.title || "Мой шаблон");
     setBaseTemplate(template.baseTemplate || "Europe");
     setFields(template.fields?.length ? template.fields : DEFAULT_CUSTOM_FIELDS);
+    setTemplateColor(template.color || DEFAULT_TEMPLATE_COLOR);
     setBuilderOpen(true);
   };
 
@@ -107,7 +112,7 @@ export default function Templates({ dark, onUse }: { dark: boolean; onUse: (t: T
       prepay: 0
     };
 
-    const next = upsertUserTemplate(customName, item, editingId || undefined, fields, baseTemplate);
+    const next = upsertUserTemplate(customName, item, editingId || undefined, fields, baseTemplate, templateColor);
     setSaved(readUserTemplates());
     selectUserTemplate(next);
     closeBuilder();
@@ -148,7 +153,7 @@ export default function Templates({ dark, onUse }: { dark: boolean; onUse: (t: T
             <div className="templateGrid userTemplateGrid">
               {saved.map((x) => (
                 <div key={x.id} className={cn("templateCard userTemplateCard templateCardStructured", dark && "templateCardDark")}> 
-                  <div className="templateTop"><b>MY</b><span>{x.fields?.length || 0} полей</span></div>
+                  <div className="templateTop"><b className="templateIconMark" style={{ backgroundColor: x.color || DEFAULT_TEMPLATE_COLOR }}>MY</b><span>{x.fields?.length || 0} полей</span></div>
                   <h3>{x.title}</h3>
                   <p>{x.baseTemplate ? `Основа: ${x.baseTemplate}.` : "Пользовательский набор полей."} Откроется новая поставка только с выбранными полями.</p>
                   <div className="templateCardActions templateCardActionsTriple">
@@ -169,7 +174,7 @@ export default function Templates({ dark, onUse }: { dark: boolean; onUse: (t: T
           <div className="templateGrid">
             {readyTemplates.map((x) => (
               <div key={x.title} className={cn("templateCard templateCardStructured", dark && "templateCardDark")}>
-                <div className="templateTop"><b>{x.icon}</b><span>готовый</span></div>
+                <div className="templateTop"><b className="templateIconMark" style={{ backgroundColor: templateBaseColors[x.title as Exclude<TemplateName, "Свой шаблон">] || "#111111" }}>{x.icon}</b><span>готовый</span></div>
                 <h3>{x.title}</h3>
                 <p>{x.desc}</p>
                 <button onClick={() => useBase(x)} className={cn("primaryButton", dark && "primaryButtonDark")}>Использовать</button>
@@ -177,7 +182,7 @@ export default function Templates({ dark, onUse }: { dark: boolean; onUse: (t: T
             ))}
 
             <button type="button" onClick={openCreateBuilder} className={cn("templateCard customLauncherCard", dark && "templateCardDark", dark && "customLauncherCardDark")}>
-              <div className="templateTop"><b>+</b><span>конструктор</span></div>
+              <div className="templateTop"><b className="templateIconMark templateIconMarkPlus">+</b><span>конструктор</span></div>
               <h3>Создать свой</h3>
               <p>Название, основа и набор полей выбираются в отдельном окне.</p>
               <div className={cn("templateLaunchAction", dark && "templateLaunchActionDark")}>
@@ -211,7 +216,7 @@ export default function Templates({ dark, onUse }: { dark: boolean; onUse: (t: T
               </div>
               <div className={cn("templateSummaryCard", dark && "templateSummaryCardDark")}>
                 <span>Шаблон</span>
-                <strong>{customName.trim() || "Мой шаблон"}</strong>
+                <strong className="templateSummaryName"><i style={{ backgroundColor: templateColor }} />{customName.trim() || "Мой шаблон"}</strong>
               </div>
             </div>
 
@@ -219,6 +224,26 @@ export default function Templates({ dark, onUse }: { dark: boolean; onUse: (t: T
               <Field label="Название" dark={dark}>
                 <Input dark={dark} value={customName} onChange={(event) => setCustomName(event.target.value)} />
               </Field>
+            </div>
+
+
+            <div className="templateColorPicker" aria-label="Цвет шаблона">
+              <div className={cn("eyebrow", theme(dark, "muted", "mutedDark"))}>Цвет шаблона</div>
+              <div className="templateColorDots">
+                {TEMPLATE_COLORS.map((color) => {
+                  const active = templateColor === color;
+                  return (
+                    <button
+                      key={color}
+                      type="button"
+                      onClick={() => setTemplateColor(color)}
+                      className={cn("templateColorDot", active && "templateColorDotActive", dark && "templateColorDotDark")}
+                      style={{ "--template-color": color } as CSSProperties}
+                      aria-label={`Выбрать цвет ${color}`}
+                    />
+                  );
+                })}
+              </div>
             </div>
 
             <div className="templateBaseTabs" role="tablist" aria-label="Основа шаблона">

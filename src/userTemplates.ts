@@ -27,11 +27,16 @@ export const ALL_TEMPLATE_FIELDS: TemplateField[] = [
 
 export const DEFAULT_CUSTOM_FIELDS: TemplateField[] = ["foreign", "rate", "local", "dest", "sale", "payment"];
 
+export const TEMPLATE_COLORS = ["#111111", "#0ECB81", "#2563EB", "#F59E0B", "#EF4444", "#8B5CF6", "#06B6D4", "#64748B"] as const;
+export type TemplateColor = (typeof TEMPLATE_COLORS)[number];
+export const DEFAULT_TEMPLATE_COLOR: TemplateColor = "#111111";
+
 export type UserTemplate = {
   id: string;
   title: string;
   baseTemplate?: Exclude<TemplateName, "Свой шаблон">;
   fields?: TemplateField[];
+  color?: string;
   item: {
     country?: string;
     product?: string;
@@ -66,10 +71,15 @@ function normalizeFields(fields?: unknown): TemplateField[] {
   return next.length ? next : [...DEFAULT_CUSTOM_FIELDS];
 }
 
+function normalizeColor(color?: unknown): string {
+  return typeof color === "string" && /^#[0-9A-Fa-f]{6}$/.test(color) ? color : DEFAULT_TEMPLATE_COLOR;
+}
+
 function normalizeTemplate(item: UserTemplate): UserTemplate {
   return {
     ...item,
-    fields: normalizeFields(item.fields)
+    fields: normalizeFields(item.fields),
+    color: normalizeColor(item.color)
   };
 }
 
@@ -112,7 +122,7 @@ export function deleteUserTemplate(id: string) {
   return next;
 }
 
-export function upsertUserTemplate(title: string, item: UserTemplate["item"], id?: string, fields?: TemplateField[], baseTemplate?: UserTemplate["baseTemplate"]): UserTemplate {
+export function upsertUserTemplate(title: string, item: UserTemplate["item"], id?: string, fields?: TemplateField[], baseTemplate?: UserTemplate["baseTemplate"], color?: string): UserTemplate {
   const name = title.trim() || "Мой шаблон";
   const items = readUserTemplates();
   const existingIndex = id ? items.findIndex((template) => template.id === id) : items.findIndex((template) => template.title.toLowerCase() === name.toLowerCase());
@@ -122,6 +132,7 @@ export function upsertUserTemplate(title: string, item: UserTemplate["item"], id
     title: name,
     baseTemplate: baseTemplate || previous?.baseTemplate,
     fields: normalizeFields(fields || previous?.fields),
+    color: normalizeColor(color || previous?.color),
     item,
     createdAt: previous ? previous.createdAt : new Date().toISOString()
   };
