@@ -27,7 +27,7 @@ export const ALL_TEMPLATE_FIELDS: TemplateField[] = [
 
 export const DEFAULT_CUSTOM_FIELDS: TemplateField[] = ["foreign", "rate", "local", "dest", "sale", "payment"];
 
-export const TEMPLATE_COLORS = ["#111111", "#0ECB81", "#2563EB", "#F59E0B", "#EF4444", "#8B5CF6", "#06B6D4", "#64748B"] as const;
+export const TEMPLATE_COLORS = ["#111111", "#2563EB", "#EF4444", "#F59E0B", "#0ECB81", "#8B5CF6", "#06B6D4", "#64748B"] as const;
 export type TemplateColor = (typeof TEMPLATE_COLORS)[number];
 export const DEFAULT_TEMPLATE_COLOR: TemplateColor = "#111111";
 

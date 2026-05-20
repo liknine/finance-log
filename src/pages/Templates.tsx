@@ -6,7 +6,7 @@ import { DEFAULT_CUSTOM_FIELDS, DEFAULT_TEMPLATE_COLOR, TEMPLATE_COLORS, deleteU
 
 const baseTemplates: Exclude<TemplateName, "Свой шаблон">[] = ["Europe", "Китай", "Япония"];
 
-const templateBaseColors: Record<Exclude<TemplateName, "Свой шаблон">, string> = { Europe: "#111111", Китай: "#0ECB81", Япония: "#8B5CF6" };
+const templateBaseColors: Record<Exclude<TemplateName, "Свой шаблон">, string> = { Europe: "#2563EB", Китай: "#EF4444", Япония: "#F59E0B" };
 
 const fieldOptions: { key: TemplateField; title: string; desc: string }[] = [
   { key: "foreign", title: "Цена закупки", desc: "валюта закупки" },

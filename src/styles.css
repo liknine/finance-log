@@ -9299,3 +9299,67 @@ button:not(:disabled):active,
     scroll-behavior: auto !important;
   }
 }
+
+/* v58: fixed template color system + dashboard metric alignment after motion polish */
+.templateIconMark {
+  color: #ffffff !important;
+}
+.templateIconMarkPlus,
+.userTemplateCard .templateIconMark {
+  background: #111111 !important;
+}
+
+/* Keep ready template color meanings stable */
+.templateCard .templateIconMark[style*="37, 99, 235"],
+.templateCard .templateIconMark[style*="#2563EB"] {
+  background-color: #2563EB !important;
+}
+.templateCard .templateIconMark[style*="239, 68, 68"],
+.templateCard .templateIconMark[style*="#EF4444"] {
+  background-color: #EF4444 !important;
+}
+.templateCard .templateIconMark[style*="245, 158, 11"],
+.templateCard .templateIconMark[style*="#F59E0B"] {
+  background-color: #F59E0B !important;
+}
+
+/* Dashboard cards should stay perfectly aligned; animations must not visually shift them */
+.dashboardMetricGrid {
+  align-items: stretch !important;
+}
+.dashboardMetric {
+  transform: none !important;
+  display: grid !important;
+  grid-template-rows: auto minmax(44px, 1fr) auto !important;
+  align-content: stretch !important;
+}
+.dashboardMetricTop {
+  align-self: start !important;
+}
+.dashboardMetricValue {
+  align-self: end !important;
+  margin-top: 0 !important;
+  padding-top: 18px !important;
+}
+.dashboardMetricMeta {
+  align-self: end !important;
+  min-height: 20px !important;
+}
+.dashboardMetric:hover,
+.dashboardMetric:active,
+.dashboardMetricGrid .card:hover,
+.dashboardMetricGrid .card:active {
+  transform: none !important;
+}
+
+@media (max-width: 760px) {
+  .dashboardMetric {
+    grid-template-rows: auto minmax(42px, 1fr) auto !important;
+  }
+  .dashboardMetricValue {
+    padding-top: 12px !important;
+  }
+  .dashboardMetricMeta {
+    min-height: 17px !important;
+  }
+}
