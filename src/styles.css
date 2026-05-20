@@ -9400,3 +9400,18 @@ button:not(:disabled):active,
     margin-top: 0 !important;
   }
 }
+
+/* v61: equal dashboard vertical rhythm without changing typography or layout */
+.dashboardMetricGrid {
+  margin-bottom: 18px !important;
+}
+
+@media (max-width: 760px) {
+  .dashboardMetricGrid {
+    margin-bottom: 12px !important;
+  }
+
+  .dashboardGrid {
+    margin-top: 0 !important;
+  }
+}
