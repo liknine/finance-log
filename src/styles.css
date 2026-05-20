@@ -9364,16 +9364,15 @@ button:not(:disabled):active,
   }
 }
 
-/* v60: mobile-only tighter rhythm between the 4 metrics and Latest deals.
-   Keep desktop unchanged; do not touch typography or card structure. */
+/* v59: mobile spacing between metric grid and latest deals */
 @media (max-width: 760px) {
   .dashboardMetricGrid {
-    margin-bottom: 4px !important;
+    margin-bottom: 18px !important;
   }
 
   .dashboardGrid {
     margin-top: 0 !important;
-    gap: 10px !important;
+    gap: 14px !important;
   }
 
   .dashboardGrid > .card:first-child {
@@ -9383,6 +9382,21 @@ button:not(:disabled):active,
 
 @media (max-width: 430px) {
   .dashboardMetricGrid {
-    margin-bottom: 2px !important;
+    margin-bottom: 16px !important;
+  }
+}
+
+/* v60: keep the vertical rhythm equal around dashboard metrics */
+.dashboardMetricGrid {
+  margin-bottom: 0 !important;
+}
+
+@media (max-width: 760px) {
+  .dashboardMetricGrid {
+    margin-bottom: 0 !important;
+  }
+
+  .dashboardGrid {
+    margin-top: 0 !important;
   }
 }
