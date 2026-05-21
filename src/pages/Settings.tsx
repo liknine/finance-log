@@ -94,6 +94,11 @@ export default function Settings({
           <span>Последний экспорт</span>
           <strong>{formatLastExport(lastExportAt)}</strong>
         </div>
+        {!lastExportAt && (
+          <div className={cn("backupSoftWarning", dark && "backupSoftWarningDark")}>
+            Данные хранятся в этом браузере. Лучше сделать экспорт, чтобы не потерять поставки после очистки памяти или смены устройства.
+          </div>
+        )}
         <div className="backupActions">
           <button type="button" onClick={onExportBackup} className={cn("softButton full", dark && "softButtonDark")}>Экспорт данных</button>
           <button type="button" onClick={() => fileInputRef.current?.click()} className={cn("primaryButton full", dark && "primaryButtonDark")}>Импорт данных</button>
