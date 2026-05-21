@@ -93,6 +93,7 @@ function readShipmentDraft(): SavedShipmentDraft | null {
     if (!saved) return null;
     const parsed = JSON.parse(saved) as SavedShipmentDraft;
     if (!parsed || !parsed.template || !Array.isArray(parsed.items) || parsed.items.length === 0) return null;
+    if (!isDraftMeaningful(parsed)) return null;
     return parsed;
   } catch {
     return null;
@@ -148,6 +149,46 @@ function makeItem(template: TemplateName, index = 0): Item {
     prepay: index === 0 ? (isCustom ? base.prepay ?? 0 : 1000) : 0,
     collapsed: false
   };
+}
+
+const DRAFT_COMPARE_KEYS: (keyof Item)[] = [
+  "country",
+  "product",
+  "rate",
+  "foreign",
+  "byn",
+  "local",
+  "dest",
+  "method",
+  "weight",
+  "kg",
+  "extra",
+  "status",
+  "sale",
+  "payment",
+  "prepay",
+  "europeCurrency",
+  "commission",
+  "photoCheck",
+  "customsValueEur",
+  "customsRate"
+];
+
+function sameDraftValue(a: unknown, b: unknown) {
+  return String(a ?? "") === String(b ?? "");
+}
+
+function isDraftMeaningful(draft: SavedShipmentDraft) {
+  if (draft.shipmentTitle?.trim()) return true;
+  if (draft.orderDate && draft.orderDate !== dateToInputValue()) return true;
+  if (draft.template === "Свой шаблон" && draft.custom?.trim() && draft.custom.trim() !== "Мой шаблон") return true;
+  if (!Array.isArray(draft.items) || draft.items.length === 0) return false;
+  if (draft.items.length > 1) return true;
+
+  return draft.items.some((item, index) => {
+    const base = makeItem(draft.template, index);
+    return DRAFT_COMPARE_KEYS.some((key) => !sameDraftValue(item[key], base[key]));
+  });
 }
 
 function makeItemFromShipment(shipment: Shipment, template: TemplateName, index: number): Item {
@@ -241,8 +282,13 @@ export default function NewShipment({ template, setTemplate, dark, currency, onS
         items,
         savedAt: new Date().toISOString()
       };
-      window.localStorage.setItem(NEW_SHIPMENT_DRAFT_KEY, JSON.stringify(draft));
-      setAvailableDraft(null);
+
+      if (isDraftMeaningful(draft)) {
+        window.localStorage.setItem(NEW_SHIPMENT_DRAFT_KEY, JSON.stringify(draft));
+        setAvailableDraft(null);
+      } else {
+        clearShipmentDraft();
+      }
     }, 300);
 
     return () => window.clearTimeout(timer);
@@ -286,6 +332,7 @@ export default function NewShipment({ template, setTemplate, dark, currency, onS
   }, [items, template]);
 
   const total = rows.reduce((a, x) => ({ spent: a.spent + x.cost, revenue: a.revenue + x.revenue, paid: a.paid + x.paid, profit: a.profit + x.profit }), { spent: 0, revenue: 0, paid: 0, profit: 0 });
+  const hasDraftContent = isDraftMeaningful({ template, custom, shipmentTitle, orderDate, items, savedAt: new Date().toISOString() });
 
   const warnings = rows.flatMap((item) => {
     const prefix = item.product?.trim() || `Товар ${item.index + 1}`;
@@ -437,9 +484,9 @@ export default function NewShipment({ template, setTemplate, dark, currency, onS
         <MiniStat label="Прибыль" value={`${total.profit >= 0 ? "+" : ""}${money(total.profit, currency)}`} good={total.profit >= 0} bad={total.profit < 0} dark={dark} />
       </div>
 
-      {warnings.length > 0 && (draftTouched || editingShipment) ? (
+      {warnings.length > 0 && (hasDraftContent || editingShipment) ? (
         <div className={cn("softWarnings", dark && "softWarningsDark")}>
-          <strong>Проверь перед сохранением</strong>
+          <strong>Мягкая проверка</strong>
           <div>{warnings.map((warning) => <p key={warning}>{warning}</p>)}</div>
         </div>
       ) : null}

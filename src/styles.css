@@ -9533,3 +9533,108 @@ button:not(:disabled):active,
     text-align: left;
   }
 }
+
+/* v63: mobile polish for new shipment form, cleaner drafts and softer warnings */
+.softWarnings {
+  position: relative;
+  overflow: hidden;
+}
+
+.softWarnings::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: rgba(14, 203, 129, 0.72);
+}
+
+.softWarnings strong {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 14px;
+  letter-spacing: -0.01em;
+}
+
+.softWarnings p {
+  padding-left: 2px;
+}
+
+@media (max-width: 760px) {
+  .newTop {
+    gap: 14px !important;
+  }
+
+  .shipmentMetaFields {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  .templateSelect {
+    gap: 10px !important;
+  }
+
+  .formSections {
+    gap: 20px !important;
+  }
+
+  .formGrid.autoFields,
+  .itemCard .formGrid.autoFields {
+    grid-template-columns: 1fr !important;
+    gap: 11px !important;
+  }
+
+  .itemCard {
+    padding: 16px !important;
+    border-radius: 24px !important;
+  }
+
+  .itemTop {
+    gap: 12px !important;
+  }
+
+  .itemTitle {
+    overflow-wrap: anywhere;
+  }
+
+  .itemActions {
+    gap: 8px !important;
+  }
+
+  .itemActions > button,
+  .itemActions .statusPill,
+  .itemCurrencySwitch {
+    min-height: 38px;
+  }
+
+  .input,
+  .select {
+    min-height: 50px;
+  }
+
+  .stickyActions {
+    margin-top: 16px !important;
+    padding-bottom: calc(8px + env(safe-area-inset-bottom)) !important;
+  }
+
+  .softWarnings {
+    padding: 13px 14px 13px 16px !important;
+    border-radius: 20px !important;
+  }
+
+  .softWarnings p {
+    font-size: 13px !important;
+    line-height: 1.35 !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .itemCard {
+    padding: 14px !important;
+  }
+
+  .itemActions {
+    width: 100%;
+  }
+}
