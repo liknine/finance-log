@@ -68,6 +68,7 @@ export default function Shipments({ dark, shipments, onOpen, currency }: { dark:
   const [query, setQuery] = useState("");
   const [sortMode, setSortMode] = useState<SortMode>("newest");
   const [showArchive, setShowArchive] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(false);
 
   const filteredShipments = useMemo(() => {
     const filtered = shipments.filter((shipment) => {
@@ -111,40 +112,63 @@ export default function Shipments({ dark, shipments, onOpen, currency }: { dark:
         </label>
       </div>
 
-      <div className="filters historyFilters">
-        {FILTERS.map((status) => {
-          const active = activeStatus === status;
-          return (
-            <button
-              key={status}
-              onClick={() => {
-                setActiveStatus(status);
-                if (status === "Закрыта") setShowArchive(true);
-              }}
-              className={cn("filter", active && "filterActive", dark && "filterDark", active && dark && "filterActiveDark")}
-            >
-              {status}
-            </button>
-          );
-        })}
+      <div className="historyFilterCompact">
+        <button
+          type="button"
+          onClick={() => setFilterOpen((value) => !value)}
+          className={cn("filterOpenButton", filterOpen && "filterOpenButtonActive", dark && "filterOpenButtonDark", filterOpen && dark && "filterOpenButtonActiveDark")}
+        >
+          <span>Фильтр</span>
+          <b>{activeStatus !== "Все" ? activeStatus : showArchive ? "С архивом" : "Все"}</b>
+        </button>
+        {(activeStatus !== "Все" || showArchive) && (
+          <button
+            type="button"
+            onClick={() => { setActiveStatus("Все"); setShowArchive(false); setFilterOpen(false); }}
+            className={cn("filterResetButton", dark && "filterResetButtonDark")}
+          >
+            Сбросить
+          </button>
+        )}
       </div>
 
-      <div className={cn("archiveControl", dark && "archiveControlDark")}> 
-        <div>
-          <strong>Архив закрытых</strong>
-          <span>{archiveCount > 0 ? `${archiveCount} закрытых поставок` : "Пока пусто"}</span>
+      {filterOpen && (
+        <div className={cn("compactFilterPanel", dark && "compactFilterPanelDark")}> 
+          <div className="compactFilterGrid">
+            {FILTERS.map((status) => {
+              const active = activeStatus === status;
+              return (
+                <button
+                  key={status}
+                  onClick={() => {
+                    setActiveStatus(status);
+                    if (status === "Закрыта") setShowArchive(true);
+                  }}
+                  className={cn("filter", active && "filterActive", dark && "filterDark", active && dark && "filterActiveDark")}
+                >
+                  {status}
+                </button>
+              );
+            })}
+          </div>
+          <div className="archiveCompactRow">
+            <div>
+              <strong>Архив закрытых</strong>
+              <span>{archiveCount > 0 ? `${archiveCount} закрытых поставок` : "Пока пусто"}</span>
+            </div>
+            <button
+              onClick={() => {
+                const next = !showArchive;
+                setShowArchive(next);
+                if (!next && activeStatus === "Закрыта") setActiveStatus("Все");
+              }}
+              className={cn("archiveToggle", showArchive && "archiveToggleActive", dark && "archiveToggleDark", showArchive && dark && "archiveToggleActiveDark")}
+            >
+              {showArchive ? "Скрыть" : "Показать"}
+            </button>
+          </div>
         </div>
-        <button
-          onClick={() => {
-            const next = !showArchive;
-            setShowArchive(next);
-            if (!next && activeStatus === "Закрыта") setActiveStatus("Все");
-          }}
-          className={cn("archiveToggle", showArchive && "archiveToggleActive", dark && "archiveToggleDark", showArchive && dark && "archiveToggleActiveDark")}
-        >
-          {showArchive ? "Скрыть архив" : "Показать архив"}
-        </button>
-      </div>
+      )}
 
       {filteredShipments.length > 0 ? (
         <div className="listGap">

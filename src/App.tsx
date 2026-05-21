@@ -145,72 +145,68 @@ function Detail({ dark, item, back, currency, onEdit, onDelete, onStatusChange, 
         </div>
       </CardBox>
 
-      <CardBox dark={dark} className="statusManagerCard">
-        <div className="statusManagerHead">
-          <div>
-            <div className={cn("eyebrow", theme(dark, "muted", "mutedDark"))}>Жизненный цикл</div>
-            <h3 className={cn("sectionHead small", theme(dark, "text", "textDark"))}>Статус поставки</h3>
+      <details className={cn("card detailCollapse statusManagerCard", dark && "cardDark detailCollapseDark")}>
+        <summary className="detailCollapseSummary">
+          <span>Статус поставки</span>
+          {isArchived ? <b>В архиве</b> : <b>{item.status}</b>}
+        </summary>
+        <div className="detailCollapseContent">
+          <div className="statusQuickGrid">
+            {STATUS_FLOW.map((status) => {
+              const active = item.status === status;
+              return (
+                <button
+                  key={status}
+                  onClick={() => onStatusChange(status)}
+                  className={cn("statusQuickButton", active && "statusQuickActive", dark && "statusQuickDark", active && dark && "statusQuickActiveDark")}
+                >
+                  {status}
+                </button>
+              );
+            })}
           </div>
-          {isArchived ? <div className={cn("archiveBadge", dark && "archiveBadgeDark")}>В архиве</div> : <div className={cn("archiveBadge active", dark && "archiveBadgeDark")}>В работе</div>}
+          <p className={cn("statusHint", theme(dark, "muted", "mutedDark"))}>
+            {isArchived
+              ? left > 0
+                ? `Поставка закрыта и находится в архиве, но осталось получить ${money(left, currency)}.`
+                : "Поставка закрыта и находится в архиве. В обычной истории она скрывается."
+              : "Когда статус станет «Закрыта», поставка попадет в архив и скроется из обычной истории."}
+          </p>
         </div>
-        <div className="statusQuickGrid">
-          {STATUS_FLOW.map((status) => {
-            const active = item.status === status;
-            return (
-              <button
-                key={status}
-                onClick={() => onStatusChange(status)}
-                className={cn("statusQuickButton", active && "statusQuickActive", dark && "statusQuickDark", active && dark && "statusQuickActiveDark")}
-              >
-                {status}
-              </button>
-            );
-          })}
-        </div>
-        <p className={cn("statusHint", theme(dark, "muted", "mutedDark"))}>
-          {isArchived
-            ? left > 0
-              ? `Поставка закрыта и находится в архиве, но осталось получить ${money(left, currency)}.`
-              : "Поставка закрыта и находится в архиве. В обычной истории она скрывается."
-            : "Когда статус станет «Закрыта», поставка попадет в архив и скроется из обычной истории."}
-        </p>
-      </CardBox>
+      </details>
 
-      <CardBox dark={dark} className="quickPaymentCard">
-        <div className="quickPaymentHead">
-          <div>
-            <div className={cn("eyebrow", theme(dark, "muted", "mutedDark"))}>Оплаты</div>
-            <h3 className={cn("sectionHead small", theme(dark, "text", "textDark"))}>Быстрая оплата</h3>
-            <p className={cn("statusHint", theme(dark, "muted", "mutedDark"))}>Для большинства заказов достаточно выбрать 0% или 100%. Частичную сумму можно указать вручную.</p>
+      <details className={cn("card detailCollapse quickPaymentCard", dark && "cardDark detailCollapseDark")}>
+        <summary className="detailCollapseSummary">
+          <span>Быстрая оплата</span>
+          <b>Осталось {money(left, currency)}</b>
+        </summary>
+        <div className="detailCollapseContent">
+          <p className={cn("statusHint", theme(dark, "muted", "mutedDark"))}>Для большинства заказов достаточно выбрать 0% или 100%. Частичную сумму можно указать вручную.</p>
+          <div className="quickPaymentGrid">
+            <button onClick={() => { setCustomPayment("0"); onQuickPayment(0); }} className={cn("statusQuickButton", item.paid <= 0 && "statusQuickActive", dark && "statusQuickDark", item.paid <= 0 && dark && "statusQuickActiveDark")}>0% предоплата</button>
+            <button onClick={() => { setCustomPayment(String(Math.round(item.revenue))); onQuickPayment(item.revenue); }} className={cn("statusQuickButton", item.revenue > 0 && item.paid >= item.revenue && "statusQuickActive", dark && "statusQuickDark", item.revenue > 0 && item.paid >= item.revenue && dark && "statusQuickActiveDark")}>100% предоплата</button>
+            <div className="quickPaymentInput">
+              <input
+                value={customPayment}
+                onChange={(event) => setCustomPayment(event.target.value)}
+                placeholder={`Сумма в ${currency}`}
+                className={cn("input", dark && "inputDark")}
+                type="number"
+              />
+              <button onClick={() => onQuickPayment(Number(customPayment) || 0)} className={cn("primaryButton", dark && "primaryButtonDark")}>Применить</button>
+            </div>
           </div>
-          <div className={cn("archiveBadge", dark && "archiveBadgeDark")}>Осталось {money(left, currency)}</div>
         </div>
-        <div className="quickPaymentGrid">
-          <button onClick={() => { setCustomPayment("0"); onQuickPayment(0); }} className={cn("statusQuickButton", item.paid <= 0 && "statusQuickActive", dark && "statusQuickDark", item.paid <= 0 && dark && "statusQuickActiveDark")}>0% предоплата</button>
-          <button onClick={() => { setCustomPayment(String(Math.round(item.revenue))); onQuickPayment(item.revenue); }} className={cn("statusQuickButton", item.revenue > 0 && item.paid >= item.revenue && "statusQuickActive", dark && "statusQuickDark", item.revenue > 0 && item.paid >= item.revenue && dark && "statusQuickActiveDark")}>100% предоплата</button>
-          <div className="quickPaymentInput">
-            <input
-              value={customPayment}
-              onChange={(event) => setCustomPayment(event.target.value)}
-              placeholder={`Сумма в ${currency}`}
-              className={cn("input", dark && "inputDark")}
-              type="number"
-            />
-            <button onClick={() => onQuickPayment(Number(customPayment) || 0)} className={cn("primaryButton", dark && "primaryButtonDark")}>Применить</button>
-          </div>
-        </div>
-      </CardBox>
+      </details>
 
-      <CardBox dark={dark}>
-        <div className="detailSubhead detailSubheadBetter">
-          <div>
-            <div className={cn("eyebrow", theme(dark, "muted", "mutedDark"))}>Вещи внутри поставки</div>
-            <h3 className={cn("sectionHead small", theme(dark, "text", "textDark"))}>Расчет по каждой вещи</h3>
-          </div>
-          <div className={cn("tag", dark && "tagDark")}>{item.details.length} позиций</div>
-        </div>
-
-        <div className="detailItemsGrid detailItemsGridBetter">
+      <details className={cn("card detailCollapse", dark && "cardDark detailCollapseDark")}>
+        <summary className="detailCollapseSummary">
+          <span>Вещи внутри поставки</span>
+          <b>{item.details.length} позиций</b>
+        </summary>
+        <div className="detailCollapseContent">
+          <div className={cn("eyebrow", theme(dark, "muted", "mutedDark"))}>Расчет по каждой вещи</div>
+          <div className="detailItemsGrid detailItemsGridBetter">
           {item.details.map((thing, index) => {
             const thingLeft = Math.max(thing.sale - thing.paid, 0);
             const thingPaidPercent = thing.sale > 0 ? Math.min((thing.paid / thing.sale) * 100, 100) : 0;
@@ -267,8 +263,9 @@ function Detail({ dark, item, back, currency, onEdit, onDelete, onStatusChange, 
               </article>
             );
           })}
+          </div>
         </div>
-      </CardBox>
+      </details>
     </div>
 
     {confirmDelete && (
@@ -376,6 +373,10 @@ export default function App() {
 
   useEffect(() => {
     window.localStorage.setItem("finance-log-theme", dark ? "dark" : "light");
+    const color = dark ? "#0f1115" : "#f7f7f5";
+    document.documentElement.style.backgroundColor = color;
+    document.body.style.backgroundColor = color;
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", color);
   }, [dark]);
 
   useEffect(() => {

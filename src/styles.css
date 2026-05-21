@@ -9638,3 +9638,261 @@ button:not(:disabled):active,
     width: 100%;
   }
 }
+
+/* v64: compact shipment filters, stable mobile modal, shorter details content */
+.historyFilterCompact {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0 14px;
+}
+
+.filterOpenButton,
+.filterResetButton {
+  height: 46px;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  background: #ffffff;
+  color: var(--text);
+  padding: 0 16px;
+  font-weight: 850;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  white-space: nowrap;
+}
+
+.filterOpenButton {
+  min-width: 170px;
+}
+
+.filterOpenButton b {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.filterOpenButtonActive {
+  background: #000000;
+  color: #ffffff;
+  border-color: #000000;
+}
+
+.filterOpenButtonActive b {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.filterOpenButtonDark,
+.filterResetButtonDark {
+  background: var(--dark-soft);
+  color: #f3f4f6;
+  border-color: var(--dark-border-soft);
+}
+
+.filterOpenButtonDark b {
+  color: #a1a1aa;
+}
+
+.filterOpenButtonActiveDark {
+  background: #f1f3f5;
+  color: #111317;
+  border-color: #f1f3f5;
+}
+
+.filterOpenButtonActiveDark b {
+  color: #52525b;
+}
+
+.compactFilterPanel {
+  border-radius: 24px;
+  border: 1px solid var(--border-soft);
+  background: var(--panel-soft);
+  padding: 12px;
+  margin: 0 0 16px;
+}
+
+.compactFilterPanelDark {
+  border-color: var(--dark-border-soft);
+  background: var(--dark-soft);
+}
+
+.compactFilterGrid {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.compactFilterGrid .filter {
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 999px;
+  width: auto;
+}
+
+.archiveCompactRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(0, 0, 0, 0.07);
+}
+
+.compactFilterPanelDark .archiveCompactRow {
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+.archiveCompactRow strong {
+  display: block;
+  font-size: 14px;
+  line-height: 1.1;
+}
+
+.archiveCompactRow span {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.compactFilterPanelDark .archiveCompactRow span {
+  color: #a1a1aa;
+}
+
+.detailCollapse {
+  overflow: hidden;
+}
+
+.detailCollapseSummary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  color: var(--text);
+  font-size: 19px;
+  line-height: 1.1;
+  font-weight: 850;
+  letter-spacing: -0.035em;
+}
+
+.detailCollapseSummary::-webkit-details-marker {
+  display: none;
+}
+
+.detailCollapseSummary::after {
+  content: "Открыть";
+  flex: 0 0 auto;
+  min-width: 74px;
+  text-align: center;
+  border-radius: 999px;
+  background: var(--panel-soft);
+  border: 1px solid var(--border-soft);
+  color: var(--muted);
+  padding: 8px 10px;
+  font-size: 12px;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  font-weight: 800;
+}
+
+.detailCollapse[open] .detailCollapseSummary::after {
+  content: "Скрыть";
+}
+
+.detailCollapseSummary b {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 13px;
+  letter-spacing: -0.02em;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.detailCollapseContent {
+  margin-top: 18px;
+}
+
+.detailCollapseDark .detailCollapseSummary {
+  color: #f3f4f6;
+}
+
+.detailCollapseDark .detailCollapseSummary b {
+  color: #a1a1aa;
+}
+
+.detailCollapseDark .detailCollapseSummary::after {
+  background: var(--dark-soft);
+  border-color: var(--dark-border-soft);
+  color: #a1a1aa;
+}
+
+@media (max-width: 760px) {
+  .historyFilterCompact {
+    margin-top: 8px;
+  }
+
+  .filterOpenButton {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .filterResetButton {
+    padding: 0 12px;
+  }
+
+  .compactFilterPanel {
+    border-radius: 22px;
+  }
+
+  .compactFilterGrid {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 2px;
+  }
+
+  .compactFilterGrid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .archiveCompactRow {
+    align-items: stretch;
+  }
+
+  .archiveCompactRow .archiveToggle {
+    width: auto;
+    min-width: 112px;
+  }
+
+  .detailCollapseSummary {
+    font-size: 18px;
+  }
+
+  .detailCollapseSummary b {
+    display: none;
+  }
+
+  .modalOverlay {
+    display: grid;
+    place-items: center;
+    align-items: center;
+    padding: 18px;
+  }
+
+  .deleteModal {
+    margin-bottom: 0;
+    max-height: calc(100dvh - 72px);
+    overflow: auto;
+  }
+}
+
+@media (max-width: 390px) {
+  .detailCollapseSummary::after {
+    min-width: 66px;
+    padding-inline: 8px;
+  }
+}
