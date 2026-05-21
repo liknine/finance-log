@@ -2,6 +2,13 @@ import { useRef } from "react";
 import { cn, theme, MAIN_CURRENCIES, type MainCurrency } from "../utils/finance";
 import { CardBox } from "../components/UI";
 
+function formatLastExport(value: string) {
+  if (!value) return "еще не выполнялся";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "еще не выполнялся";
+  return new Intl.DateTimeFormat("ru-RU", { day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" }).format(date);
+}
+
 function RefreshIcon() {
   return (
     <svg className="settingsAutoIcon" viewBox="0 0 24 24" aria-hidden="true">
@@ -19,7 +26,8 @@ export default function Settings({
   setCurrency,
   rubRate: _rubRate,
   onExportBackup,
-  onImportBackup
+  onImportBackup,
+  lastExportAt
 }: {
   dark: boolean;
   currency: MainCurrency;
@@ -28,6 +36,7 @@ export default function Settings({
   setRubRate: (value: number) => void;
   onExportBackup: () => void;
   onImportBackup: (file: File) => void;
+  lastExportAt: string;
 }) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -81,6 +90,10 @@ export default function Settings({
       <CardBox dark={dark} className="settingsWide">
         <h2 className={cn("sectionHead", theme(dark, "text", "textDark"))}>Бэкап данных</h2>
         <p className={cn("pageDesc", theme(dark, "muted", "mutedDark"))}>Сохрани файл с поставками, шаблонами и настройками, чтобы восстановить данные на другом устройстве или после очистки браузера.</p>
+        <div className={cn("backupLastExport", dark && "backupLastExportDark")}>
+          <span>Последний экспорт</span>
+          <strong>{formatLastExport(lastExportAt)}</strong>
+        </div>
         <div className="backupActions">
           <button type="button" onClick={onExportBackup} className={cn("softButton full", dark && "softButtonDark")}>Экспорт данных</button>
           <button type="button" onClick={() => fileInputRef.current?.click()} className={cn("primaryButton full", dark && "primaryButtonDark")}>Импорт данных</button>

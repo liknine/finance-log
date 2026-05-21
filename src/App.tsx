@@ -293,6 +293,7 @@ function Detail({ dark, item, back, currency, onEdit, onDelete, onStatusChange, 
 }
 
 const SHIPMENTS_STORAGE_KEY = "finance-log-shipments";
+const LAST_EXPORT_STORAGE_KEY = "finance-log-last-export-at";
 
 function normalizeShipmentDates(shipments: Shipment[]): Shipment[] {
   return shipments.map((shipment) => {
@@ -333,6 +334,7 @@ export default function App() {
   const [toast, setToast] = useState<{ id: number; message: string } | null>(null);
   const [dashboardSearch, setDashboardSearch] = useState("");
   const [templateNonce, setTemplateNonce] = useState(0);
+  const [lastExportAt, setLastExportAt] = useState(() => window.localStorage.getItem(LAST_EXPORT_STORAGE_KEY) || "");
 
   const notify = (message: string) => {
     const id = Date.now();
@@ -481,6 +483,9 @@ export default function App() {
     link.click();
     link.remove();
     URL.revokeObjectURL(url);
+    const exportedAt = new Date().toISOString();
+    window.localStorage.setItem(LAST_EXPORT_STORAGE_KEY, exportedAt);
+    setLastExportAt(exportedAt);
     notify("Бэкап скачан");
   };
 
@@ -529,7 +534,7 @@ export default function App() {
     : tab === "new" ? <NewShipment key={`${template}-${templateNonce}-${editingShipment?.id || editingShipment?.name || "new"}`} template={template} setTemplate={setTemplate} dark={dark} currency={currency} onSave={saveShipment} editingShipment={editingShipment} onCancelEdit={() => { setEditingShipment(null); setTab("detail"); }} onTemplateSaved={notify} />
     : tab === "templates" ? <Templates dark={dark} onUse={(x) => { setEditingShipment(null); setTemplate(x.title); setTemplateNonce((value) => value + 1); setTab("new"); }} />
     : tab === "tools" ? <Tools dark={dark} currency={currency} />
-    : tab === "settings" ? <Settings dark={dark} currency={currency} setCurrency={setCurrency} rubRate={rubRate} setRubRate={updateRubRate} onExportBackup={exportBackup} onImportBackup={importBackup} />
+    : tab === "settings" ? <Settings dark={dark} currency={currency} setCurrency={setCurrency} rubRate={rubRate} setRubRate={updateRubRate} onExportBackup={exportBackup} onImportBackup={importBackup} lastExportAt={lastExportAt} />
     : <Dashboard dark={dark} shipments={activeShipments} onOpen={open} currency={currency} searchQuery={dashboardSearch} />;
 
   return (

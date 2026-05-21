@@ -18,7 +18,7 @@ function DashboardMetric({ label, value, tone, meta, icon, dark }: { label: stri
 export function ShipmentCard({ shipment, dark, onOpen, currency }: { shipment: Shipment; dark: boolean; onOpen: (s: Shipment) => void; currency: MainCurrency }) {
   const paidPercent = shipment.revenue ? Math.min((shipment.paid / shipment.revenue) * 100, 100) : 0;
   return (
-    <button onClick={() => onOpen(shipment)} className={cn("shipmentCard", dark && "shipmentCardDark")}>
+    <button type="button" onClick={() => onOpen(shipment)} className={cn("shipmentCard", dark && "shipmentCardDark")} aria-label={`Открыть сделку ${shipment.name}`}>
       <div className="shipmentTop">
         <div>
           <div className={cn("shipmentName", theme(dark, "text", "textDark"))}>{shipment.name}</div>
@@ -54,9 +54,17 @@ export default function Dashboard({ dark, shipments, onOpen, currency, searchQue
         shipment.status,
         shipment.date,
         formatDisplayDate(shipment.createdAt),
+        shipment.revenue,
+        shipment.paid,
+        shipment.spent,
+        shipment.delivery,
+        shipment.profit,
         ...shipment.details.map((detail) => detail.name),
         ...shipment.details.map((detail) => detail.country),
-        ...shipment.details.map((detail) => detail.status)
+        ...shipment.details.map((detail) => detail.status),
+        ...shipment.details.map((detail) => detail.sale),
+        ...shipment.details.map((detail) => detail.purchase),
+        ...shipment.details.map((detail) => detail.profit)
       ].filter(Boolean).some((value) => String(value).toLowerCase().includes(normalizedSearch)))
     : shipments;
   const hasShipments = shipments.length > 0;

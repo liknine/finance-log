@@ -50,7 +50,17 @@ type SavedCustomTemplate = {
   fields?: TemplateField[];
 };
 
+type SavedShipmentDraft = {
+  template: TemplateName;
+  custom: string;
+  shipmentTitle: string;
+  orderDate: string;
+  items: Item[];
+  savedAt: string;
+};
+
 const CUSTOM_TEMPLATE_KEY = "finance-log-custom-template";
+const NEW_SHIPMENT_DRAFT_KEY = "finance-log-new-shipment-draft";
 
 function rowToTemplateItem(item: Row) {
   return {
@@ -75,6 +85,28 @@ function rowToTemplateItem(item: Row) {
     customsValueEur: item.customsValueEur,
     customsRate: item.customsRate
   };
+}
+
+function readShipmentDraft(): SavedShipmentDraft | null {
+  try {
+    const saved = window.localStorage.getItem(NEW_SHIPMENT_DRAFT_KEY);
+    if (!saved) return null;
+    const parsed = JSON.parse(saved) as SavedShipmentDraft;
+    if (!parsed || !parsed.template || !Array.isArray(parsed.items) || parsed.items.length === 0) return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function clearShipmentDraft() {
+  window.localStorage.removeItem(NEW_SHIPMENT_DRAFT_KEY);
+}
+
+function formatDraftSavedAt(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "недавно";
+  return new Intl.DateTimeFormat("ru-RU", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }).format(date).replace(" г.", "");
 }
 
 function readCustomTemplate(): SavedCustomTemplate {
@@ -176,7 +208,13 @@ export default function NewShipment({ template, setTemplate, dark, currency, onS
   const [activeUserTemplate, setActiveUserTemplate] = useState<UserTemplate | null>(() => template === "Свой шаблон" ? readSelectedUserTemplate() : null);
   const [templateSaved, setTemplateSaved] = useState(false);
   const [savedTemplateId, setSavedTemplateId] = useState<string | null>(null);
+  const [availableDraft, setAvailableDraft] = useState<SavedShipmentDraft | null>(() => editingShipment ? null : readShipmentDraft());
+  const [draftTouched, setDraftTouched] = useState(false);
   const display = template === "Свой шаблон" ? custom : template;
+
+  const touchDraft = () => {
+    if (!editingShipment) setDraftTouched(true);
+  };
 
   useEffect(() => {
     if (!editingShipment) return;
@@ -191,16 +229,42 @@ export default function NewShipment({ template, setTemplate, dark, currency, onS
     setActiveUserTemplate(template === "Свой шаблон" ? readSelectedUserTemplate() : null);
   }, [template]);
 
+  useEffect(() => {
+    if (editingShipment || !draftTouched) return;
+
+    const timer = window.setTimeout(() => {
+      const draft: SavedShipmentDraft = {
+        template,
+        custom,
+        shipmentTitle,
+        orderDate,
+        items,
+        savedAt: new Date().toISOString()
+      };
+      window.localStorage.setItem(NEW_SHIPMENT_DRAFT_KEY, JSON.stringify(draft));
+      setAvailableDraft(null);
+    }, 300);
+
+    return () => window.clearTimeout(timer);
+  }, [editingShipment, draftTouched, template, custom, shipmentTitle, orderDate, items]);
+
   const activeFields = template === "Свой шаблон" ? (activeUserTemplate?.fields && activeUserTemplate.fields.length ? activeUserTemplate.fields : ALL_TEMPLATE_FIELDS) : ALL_TEMPLATE_FIELDS;
   const fieldOn = (field: TemplateField) => template !== "Свой шаблон" || activeFields.includes(field);
 
   const update = (id: number, key: keyof Item, value: string | boolean) => {
     setTemplateSaved(false);
+    touchDraft();
     setItems((prev) => prev.map((x) => (x.id === id ? { ...x, [key]: value } : x)));
   };
 
-  const add = () => setItems((prev) => [...prev, makeItem(template, prev.length + 1)]);
-  const remove = (id: number) => setItems((prev) => (prev.length > 1 ? prev.filter((x) => x.id !== id) : prev));
+  const add = () => {
+    touchDraft();
+    setItems((prev) => [...prev, makeItem(template, prev.length + 1)]);
+  };
+  const remove = (id: number) => {
+    touchDraft();
+    setItems((prev) => (prev.length > 1 ? prev.filter((x) => x.id !== id) : prev));
+  };
 
   const rows = useMemo<Row[]>(() => {
     return items.map((x, index) => {
@@ -222,6 +286,33 @@ export default function NewShipment({ template, setTemplate, dark, currency, onS
   }, [items, template]);
 
   const total = rows.reduce((a, x) => ({ spent: a.spent + x.cost, revenue: a.revenue + x.revenue, paid: a.paid + x.paid, profit: a.profit + x.profit }), { spent: 0, revenue: 0, paid: 0, profit: 0 });
+
+  const warnings = rows.flatMap((item) => {
+    const prefix = item.product?.trim() || `Товар ${item.index + 1}`;
+    const itemWarnings: string[] = [];
+    if (!item.product?.trim()) itemWarnings.push(`Товар ${item.index + 1}: добавь название, чтобы потом легко найти сделку.`);
+    if (item.revenue > 0 && item.revenue < item.cost) itemWarnings.push(`${prefix}: цена продажи ниже себестоимости.`);
+    if (item.payment === "partial" && toNumber(item.prepay) > item.revenue && item.revenue > 0) itemWarnings.push(`${prefix}: предоплата больше цены продажи.`);
+    if (item.delivery === 0 && (toNumber(item.foreign) > 0 || item.revenue > 0)) itemWarnings.push(`${prefix}: доставка не указана.`);
+    return itemWarnings;
+  }).slice(0, 4);
+
+  const restoreDraft = (draft: SavedShipmentDraft) => {
+    setTemplate(draft.template);
+    setCustom(draft.custom || "Мой шаблон");
+    setShipmentTitle(draft.shipmentTitle || "");
+    setOrderDate(draft.orderDate || dateToInputValue());
+    setItems(draft.items.map((item, index) => ({ ...makeItem(draft.template, index), ...item, id: Date.now() + index })));
+    setActiveUserTemplate(draft.template === "Свой шаблон" ? readSelectedUserTemplate() : null);
+    setAvailableDraft(null);
+    setDraftTouched(true);
+  };
+
+  const removeDraft = () => {
+    clearShipmentDraft();
+    setAvailableDraft(null);
+    setDraftTouched(false);
+  };
 
   const buildShipment = (): Shipment => {
     const first = rows[0];
@@ -294,6 +385,9 @@ export default function NewShipment({ template, setTemplate, dark, currency, onS
 
   const handleSave = () => {
     if (template === "Свой шаблон" && rows[0]) saveCustomTemplate(custom, rows[0], activeFields, activeUserTemplate?.baseTemplate);
+    clearShipmentDraft();
+    setAvailableDraft(null);
+    setDraftTouched(false);
     onSave(buildShipment());
   };
 
@@ -306,22 +400,35 @@ export default function NewShipment({ template, setTemplate, dark, currency, onS
           <div className={cn("tag", dark && "tagDark")}>{display}</div>
           <div className="shipmentTitleField shipmentMetaFields">
             <Field label="Название поставки" dark={dark}>
-              <Input dark={dark} value={shipmentTitle} placeholder={`${display} · ${rows[0]?.product || "Новая поставка"}`} onChange={(e) => setShipmentTitle(e.target.value)} />
+              <Input dark={dark} value={shipmentTitle} placeholder={`${display} · ${rows[0]?.product || "Новая поставка"}`} onChange={(e) => { touchDraft(); setShipmentTitle(e.target.value); }} />
             </Field>
             <Field label="Дата заказа" dark={dark}>
-              <Input dark={dark} type="date" value={orderDate} onChange={(e) => setOrderDate(e.target.value)} />
+              <Input dark={dark} type="date" value={orderDate} onChange={(e) => { touchDraft(); setOrderDate(e.target.value); }} />
             </Field>
           </div>
         </div>
         <div className="templateSelect">
           <Field label="Тип шаблона" dark={dark}>
-            <Select dark={dark} value={template} onChange={(e) => { const next = e.target.value as TemplateName; if (next !== "Свой шаблон") { selectUserTemplate(null); setActiveUserTemplate(null); } else { setActiveUserTemplate(readSelectedUserTemplate()); } setTemplate(next); setItems([makeItem(next)]); }}>
+            <Select dark={dark} value={template} onChange={(e) => { const next = e.target.value as TemplateName; touchDraft(); if (next !== "Свой шаблон") { selectUserTemplate(null); setActiveUserTemplate(null); } else { setActiveUserTemplate(readSelectedUserTemplate()); } setTemplate(next); setItems([makeItem(next)]); }}>
               {templates.map((x) => <option key={x.title}>{x.title}</option>)}
             </Select>
           </Field>
-          {template === "Свой шаблон" && <Field label="Название своего шаблона" dark={dark}><Input dark={dark} value={custom} onChange={(e) => setCustom(e.target.value)} /></Field>}
+          {template === "Свой шаблон" && <Field label="Название своего шаблона" dark={dark}><Input dark={dark} value={custom} onChange={(e) => { touchDraft(); setCustom(e.target.value); }} /></Field>}
         </div>
       </div>
+
+      {availableDraft && !editingShipment ? (
+        <div className={cn("draftNotice", dark && "draftNoticeDark")}>
+          <div>
+            <strong>Есть незавершенная сделка</strong>
+            <p>Черновик сохранен {formatDraftSavedAt(availableDraft.savedAt)}. Можно продолжить заполнение или удалить его.</p>
+          </div>
+          <div className="draftNoticeActions">
+            <button type="button" onClick={() => restoreDraft(availableDraft)} className={cn("softButton", dark && "softButtonDark")}>Продолжить</button>
+            <button type="button" onClick={removeDraft} className={cn("softButton", dark && "softButtonDark")}>Удалить</button>
+          </div>
+        </div>
+      ) : null}
 
       <div className="statGrid compact">
         <MiniStat label="Вещей" value={rows.length} dark={dark} />
@@ -329,6 +436,13 @@ export default function NewShipment({ template, setTemplate, dark, currency, onS
         <MiniStat label="Выручка" value={money(total.revenue, currency)} dark={dark} />
         <MiniStat label="Прибыль" value={`${total.profit >= 0 ? "+" : ""}${money(total.profit, currency)}`} good={total.profit >= 0} bad={total.profit < 0} dark={dark} />
       </div>
+
+      {warnings.length > 0 && (draftTouched || editingShipment) ? (
+        <div className={cn("softWarnings", dark && "softWarningsDark")}>
+          <strong>Проверь перед сохранением</strong>
+          <div>{warnings.map((warning) => <p key={warning}>{warning}</p>)}</div>
+        </div>
+      ) : null}
 
       <div className="listGap big">
         {rows.map((x) => {

@@ -9415,3 +9415,121 @@ button:not(:disabled):active,
     margin-top: 0 !important;
   }
 }
+
+/* v62: draft recovery, soft warnings and backup export state */
+.draftNotice,
+.softWarnings,
+.backupLastExport {
+  border: 1px solid rgba(18, 18, 18, 0.08);
+  background: rgba(250, 249, 246, 0.72);
+  border-radius: 24px;
+}
+
+.draftNotice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+  margin-top: 18px;
+}
+
+.draftNotice strong,
+.softWarnings strong,
+.backupLastExport strong {
+  color: #050505;
+}
+
+.draftNotice p,
+.softWarnings p,
+.backupLastExport span {
+  margin: 4px 0 0;
+  color: #73727d;
+  line-height: 1.35;
+}
+
+.draftNoticeActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.softWarnings {
+  padding: 14px 16px;
+  margin-top: 16px;
+}
+
+.softWarnings p {
+  font-size: 14px;
+}
+
+.softWarnings p + p {
+  margin-top: 5px;
+}
+
+.backupLastExport {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  margin: 16px 0 14px;
+}
+
+.backupLastExport span {
+  margin: 0;
+}
+
+.backupLastExport strong {
+  text-align: right;
+}
+
+.draftNoticeDark,
+.softWarningsDark,
+.backupLastExportDark {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.draftNoticeDark strong,
+.softWarningsDark strong,
+.backupLastExportDark strong {
+  color: #f6f6f2;
+}
+
+.draftNoticeDark p,
+.softWarningsDark p,
+.backupLastExportDark span {
+  color: #a7a7ad;
+}
+
+@media (max-width: 760px) {
+  .draftNotice {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 20px;
+  }
+
+  .draftNoticeActions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+  }
+
+  .draftNoticeActions .softButton {
+    width: 100%;
+  }
+
+  .backupLastExport {
+    align-items: flex-start;
+    flex-direction: column;
+    border-radius: 20px;
+  }
+
+  .backupLastExport strong {
+    text-align: left;
+  }
+}
