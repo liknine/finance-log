@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { shipments as mockShipments, type Shipment, type ShipmentStatus, type TemplateName } from "./data/mockData";
 import { AppShell, type Tab } from "./components/Layout";
 import Dashboard from "./pages/Dashboard";
@@ -268,7 +269,7 @@ function Detail({ dark, item, back, currency, onEdit, onDelete, onStatusChange, 
       </details>
     </div>
 
-    {confirmDelete && (
+    {confirmDelete && createPortal(
       <div className="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="delete-title" onClick={() => setConfirmDelete(false)}>
         <div className={cn("deleteModal", dark && "deleteModalDark")} onClick={(event) => event.stopPropagation()}>
           <div className="modalIcon">!</div>
@@ -283,7 +284,8 @@ function Detail({ dark, item, back, currency, onEdit, onDelete, onStatusChange, 
             <button onClick={onDelete} className="primaryButton full modalDeleteButton">Удалить</button>
           </div>
         </div>
-      </div>
+      </div>,
+      document.body
     )}
     </>
   );
