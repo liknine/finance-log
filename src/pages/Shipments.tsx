@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import type { Shipment, ShipmentStatus } from "../data/mockData";
 import { cn, theme, formatDisplayDate, type MainCurrency } from "../utils/finance";
 import { CardBox } from "../components/UI";
@@ -132,7 +133,7 @@ export default function Shipments({ dark, shipments, onOpen, currency }: { dark:
         )}
       </div>
 
-      {filterOpen && (
+      {filterOpen && createPortal(
         <div className="filterSheetOverlay" role="dialog" aria-modal="true" aria-label="Фильтр поставок" onClick={() => setFilterOpen(false)}>
           <div className={cn("filterSheet", dark && "filterSheetDark")} onClick={(event) => event.stopPropagation()}>
             <div className="filterSheetHead">
@@ -172,6 +173,7 @@ export default function Shipments({ dark, shipments, onOpen, currency }: { dark:
                   const next = !showArchive;
                   setShowArchive(next);
                   if (!next && activeStatus === "Закрыта") setActiveStatus("Все");
+                  setFilterOpen(false);
                 }}
                 className={cn("archiveToggle", showArchive && "archiveToggleActive", dark && "archiveToggleDark", showArchive && dark && "archiveToggleActiveDark")}
               >
@@ -179,7 +181,8 @@ export default function Shipments({ dark, shipments, onOpen, currency }: { dark:
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {filteredShipments.length > 0 ? (
