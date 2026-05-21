@@ -10002,3 +10002,146 @@ body,
     min-width: 0;
   }
 }
+
+/* v66: stable filter sheet on mobile */
+.filterSheetOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 130;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(0, 0, 0, 0.38);
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+}
+
+.filterSheet {
+  width: min(520px, 100%);
+  max-width: calc(100vw - 36px);
+  border-radius: 28px;
+  border: 1px solid var(--border-soft);
+  background: #ffffff;
+  box-shadow: 0 26px 80px rgba(0, 0, 0, 0.22);
+  padding: 16px;
+  overflow: hidden;
+  animation: flScaleIn 0.2s ease both;
+}
+
+.filterSheetDark {
+  background: #0b0b0d;
+  border-color: var(--dark-border-soft);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.58);
+}
+
+.filterSheetHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.filterSheetHead strong {
+  display: block;
+  font-size: 22px;
+  line-height: 1;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+}
+
+.filterSheetHead span {
+  display: block;
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.25;
+  font-weight: 650;
+}
+
+.filterSheetDark .filterSheetHead span {
+  color: #a1a1aa;
+}
+
+.filterSheetClose {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  border-radius: 16px;
+  border: 1px solid var(--border-soft);
+  background: var(--panel-soft);
+  color: var(--text);
+  font-size: 24px;
+  line-height: 1;
+  font-weight: 750;
+}
+
+.filterSheetCloseDark {
+  background: var(--dark-soft);
+  border-color: var(--dark-border-soft);
+  color: #f3f4f6;
+}
+
+.filterSheet .compactFilterGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  overflow: visible;
+  padding-bottom: 0;
+}
+
+.filterSheet .compactFilterGrid .filter {
+  flex: 0 0 auto;
+  width: auto !important;
+  max-width: 100%;
+}
+
+.filterSheet .archiveCompactRow {
+  width: 100%;
+}
+
+@media (max-width: 760px) {
+  .filterSheetOverlay {
+    align-items: end;
+    place-items: end center;
+    padding: 14px 14px calc(14px + env(safe-area-inset-bottom));
+  }
+
+  .filterSheet {
+    width: 100%;
+    max-width: calc(100vw - 28px);
+    border-radius: 28px;
+    padding: 16px;
+    max-height: calc(100dvh - 96px);
+    overflow-y: auto;
+  }
+
+  .filterSheet .compactFilterGrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    overflow: visible;
+    width: 100%;
+  }
+
+  .filterSheet .compactFilterGrid .filter {
+    width: 100% !important;
+    min-width: 0;
+    justify-content: center;
+  }
+
+  .filterSheet .archiveCompactRow {
+    align-items: center;
+    gap: 10px;
+  }
+
+  .filterSheet .archiveCompactRow .archiveToggle {
+    flex: 0 0 auto;
+    min-width: 104px;
+  }
+}
+
+@media (max-width: 390px) {
+  .filterSheet .compactFilterGrid {
+    grid-template-columns: 1fr;
+  }
+}

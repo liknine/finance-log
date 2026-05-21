@@ -133,39 +133,51 @@ export default function Shipments({ dark, shipments, onOpen, currency }: { dark:
       </div>
 
       {filterOpen && (
-        <div className={cn("compactFilterPanel", dark && "compactFilterPanelDark")}> 
-          <div className="compactFilterGrid">
-            {FILTERS.map((status) => {
-              const active = activeStatus === status;
-              return (
-                <button
-                  key={status}
-                  onClick={() => {
-                    setActiveStatus(status);
-                    if (status === "Закрыта") setShowArchive(true);
-                  }}
-                  className={cn("filter", active && "filterActive", dark && "filterDark", active && dark && "filterActiveDark")}
-                >
-                  {status}
-                </button>
-              );
-            })}
-          </div>
-          <div className="archiveCompactRow">
-            <div>
-              <strong>Архив закрытых</strong>
-              <span>{archiveCount > 0 ? `${archiveCount} закрытых поставок` : "Пока пусто"}</span>
+        <div className="filterSheetOverlay" role="dialog" aria-modal="true" aria-label="Фильтр поставок" onClick={() => setFilterOpen(false)}>
+          <div className={cn("filterSheet", dark && "filterSheetDark")} onClick={(event) => event.stopPropagation()}>
+            <div className="filterSheetHead">
+              <div>
+                <strong>Фильтр</strong>
+                <span>Статус и архив поставок</span>
+              </div>
+              <button type="button" onClick={() => setFilterOpen(false)} className={cn("filterSheetClose", dark && "filterSheetCloseDark")}>×</button>
             </div>
-            <button
-              onClick={() => {
-                const next = !showArchive;
-                setShowArchive(next);
-                if (!next && activeStatus === "Закрыта") setActiveStatus("Все");
-              }}
-              className={cn("archiveToggle", showArchive && "archiveToggleActive", dark && "archiveToggleDark", showArchive && dark && "archiveToggleActiveDark")}
-            >
-              {showArchive ? "Скрыть" : "Показать"}
-            </button>
+
+            <div className="compactFilterGrid">
+              {FILTERS.map((status) => {
+                const active = activeStatus === status;
+                return (
+                  <button
+                    key={status}
+                    onClick={() => {
+                      setActiveStatus(status);
+                      if (status === "Закрыта") setShowArchive(true);
+                      setFilterOpen(false);
+                    }}
+                    className={cn("filter", active && "filterActive", dark && "filterDark", active && dark && "filterActiveDark")}
+                  >
+                    {status}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="archiveCompactRow">
+              <div>
+                <strong>Архив закрытых</strong>
+                <span>{archiveCount > 0 ? `${archiveCount} закрытых поставок` : "Пока пусто"}</span>
+              </div>
+              <button
+                onClick={() => {
+                  const next = !showArchive;
+                  setShowArchive(next);
+                  if (!next && activeStatus === "Закрыта") setActiveStatus("Все");
+                }}
+                className={cn("archiveToggle", showArchive && "archiveToggleActive", dark && "archiveToggleDark", showArchive && dark && "archiveToggleActiveDark")}
+              >
+                {showArchive ? "Скрыть" : "Показать"}
+              </button>
+            </div>
           </div>
         </div>
       )}
